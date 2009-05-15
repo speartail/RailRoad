@@ -1,5 +1,12 @@
+Version 0.3.2 (apr 9 2007)
+- Disable STDOUT when loading applications classes, avoiding 
+  messing up the DOT output.
+  (Thanks to Sebastien Auvray, http://tnlessone.wordpress.com/)
+
+
 Version 0.3.1 (apr 9 2007)
 - Release again for fix an error in .gem file
+
 
 Version 0.3.0 (apr 9 2007)
 - Major code rewrite 

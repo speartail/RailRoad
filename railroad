@@ -16,15 +16,17 @@
 
 APP_NAME  = "railroad"
 APP_HUMAN_NAME = "RailRoad"
-APP_VERSION   = [0,3,1]
+APP_VERSION   = [0,3,2]
 COPYRIGHT = "Copyright (C) 2007 Javier Smaldone"
 
 
+# Command line options parser
 class OptionsParser
 
   require 'optparse'
   require 'ostruct'
 
+  # Parse arguments from command line
   def self.parse(args)
 
     options = OpenStruct.new
@@ -101,7 +103,7 @@ class OptionsParser
       opts.separator "Commands (you must supply one of these):"
       opts.on("-M", "--models", "Generate models diagram") do |c|
          if options.command == 'controllers'
-           $stderr.print "Error: Can't generate models AND controllers diagram\n\n"
+           STDERR.print "Error: Can't generate models AND controllers diagram\n\n"
            exit 1
          else 
            options.command = 'models'        
@@ -109,7 +111,7 @@ class OptionsParser
       end
       opts.on("-C", "--controllers", "Generate controllers diagram") do |c|
          if options.command == 'models'
-           $stderr.print "Error: Can't generate models AND controllers diagram\n\n"
+           STDERR.print "Error: Can't generate models AND controllers diagram\n\n"
            exit 1
          else 
            options.command = 'controllers'        
@@ -139,13 +141,14 @@ class OptionsParser
   private 
 
   def self.option_error(msg, opts)
-    $stderr.print "Error: #{msg}\n\n #{opts}\n"
+    STDERR.print "Error: #{msg}\n\n #{opts}\n"
     exit 1
   end
 
 end  # class OptionsParser
 
 
+# Root class for RailRoad diagrams
 class AppDiagram
 
   def initialize(options)
@@ -160,6 +163,18 @@ class AppDiagram
     '"' + name + '"'
   end
 
+  # Prevents Rails application from writing to STDOUT
+  def disable_stdout
+    @old_stdout = STDOUT.dup
+    STDOUT.reopen( PLATFORM =~ /mswin/ ? "NUL" : "/dev/null" )
+  end
+
+  # Restore STDOUT  
+  def enable_stdout
+    STDOUT.reopen(@old_stdout)
+  end
+
+
   # Print diagram label
   def print_info(type)
     print "\t_diagram_info [shape=\"plaintext\", label=\"Diagram: #{type}\\l" +
@@ -169,6 +184,7 @@ class AppDiagram
           ", fontsize=14]\n"
   end
 
+  # Print error when loading application classes
   def print_error(type)
     STDERR.print "Error loading #{type}.\n  (Are you running " +
                  "#{APP_NAME} on the aplication's root directory?)\n\n"
@@ -177,8 +193,11 @@ class AppDiagram
   # Load Rails application's environment
   def load_environment
     begin
+      disable_stdout
       require "config/environment"
+      enable_stdout
     rescue LoadError
+      enable_stdout
       print_error "app environment"
       raise
     end
@@ -187,6 +206,7 @@ class AppDiagram
 end # class AppDiagram
 
 
+# RailRoad models diagram
 class ModelsDiagram < AppDiagram
 
   # Generate models diagram
@@ -218,8 +238,11 @@ class ModelsDiagram < AppDiagram
   # Load model classes
   def load_classes
     begin
+      disable_stdout
       Dir.glob("app/models/**/*.rb") {|m| require m }
+      enable_stdout
     rescue LoadError
+      enable_stdout
       print_error "model classes"
       raise
     end
@@ -316,6 +339,7 @@ class ModelsDiagram < AppDiagram
 end # class ModelsDiagram
 
 
+# RailRoad controllers diagram
 class ControllersDiagram < AppDiagram
 
   # Generate controllers diagram
@@ -353,12 +377,15 @@ class ControllersDiagram < AppDiagram
   # Load controller classes
   def load_classes
     begin
+      disable_stdout
       # ApplicationController must be loaded first
       require "app/controllers/application.rb" 
       Dir.glob("app/controllers/**/*_controller.rb") do |c| 
         require c
       end
+      enable_stdout
     rescue LoadError
+      enable_stdout
       print_error "controller classes"
       raise
     end
@@ -366,6 +393,7 @@ class ControllersDiagram < AppDiagram
 
   # Proccess controller class
   def process_class(current_class)
+
     # Print the node
     if @options.brief
       print "\t#{node(current_class.name)}\n"
@@ -411,23 +439,23 @@ if options.command == 'models'
 elsif options.command == 'controllers'
   diagram = ControllersDiagram.new options
 else
-  $stderr.print "Error: You must supply a command\n" +
-                "  (try #{APP_NAME} -h)\n\n"
+  STDERR.print "Error: You must supply a command\n" +
+               "  (try #{APP_NAME} -h)\n\n"
   exit 1
 end
 
 if options.output
-  old_stdout = $stdout
+  old_stdout = STDOUT.dup
   begin
-     $stdout = File.open(options.output, "w")
+     STDOUT.reopen(options.output)
   rescue
-     $stderr.print "Error: Cannot write to #{options.output}\n\n"
+     STDERR.print "Error: Cannot write to #{options.output}\n\n"
      exit 2
   end
 end
 
 diagram.generate
 
-if options.out
-  $stdout = old_stdout
+if options.output
+  STDOUT.reopen(old_stdout)
 end

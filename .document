@@ -1,4 +1,5 @@
 README.rdoc
+ChangeLog.rdoc
 lib/**/*.rb
 bin/*
 features/**/*.feature

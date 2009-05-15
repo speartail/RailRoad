@@ -1,16 +1,18 @@
-Version 0.5.3 (may 15 2009)
+= Changes
+
+== Version 0.5.3 (may 15 2009)
 - Fixed broken gemspec
 
-Version 0.5.2 (may 15 2009)
+== Version 0.5.2 (may 15 2009)
 - Added ChangeLog entries
 - Added AUTHORS entry
 - Updated railroad version entry
 
-Version 0.5.1 (may 15 2009)
+== Version 0.5.1 (may 15 2009)
 - Support rails v2.3
 - Support namespaced models/controllers
 
-Version 0.5.0 (may 10 2008)
+== Version 0.5.0 (may 10 2008)
 - Changed model relationships representation (feature request #10898)
 - Added support for plugins models (-p) (feature request #12742 by 
   Chris Richards). Thanks to Elliot Smith.
@@ -23,12 +25,10 @@ Version 0.5.0 (may 10 2008)
 - Added support for state machine diagram ("acts as state machine" plugin).
   Thanks to Ana Nelson (she did all the work!).
 
-
-Version 0.4.1 (may 9 2008)
+== Version 0.4.1 (may 9 2008)
 - Fix bug #17852 (class name treated as String).
 
-
-Version 0.4.0 (apr 25 2007)
+== Version 0.4.0 (apr 25 2007)
 - Draw inheritance edges in reverse way
   (from superclass to subclass, with an arrow in the tail)
   This improves how 'dot' renders the graph
@@ -37,8 +37,7 @@ Version 0.4.0 (apr 25 2007)
 - Added --exclude flag for ommiting classes (this may help to produce
   diagrams for applications with broken classes)
 
-
-Version 0.3.4 (apr 12 2007)
+== Version 0.3.4 (apr 12 2007)
 - Add support for model abstract classes.
   (don't try to get content columns, bug #10033)
 - Add verbose mode
@@ -47,22 +46,18 @@ Version 0.3.4 (apr 12 2007)
   generating the DOT output. This will allow to
   add more output formats in the future.
 
-
-Version 0.3.3 (apr 10 2007)
+== Version 0.3.3 (apr 10 2007)
 - Code cleanup 
 
-
-Version 0.3.2 (apr 9 2007)
+== Version 0.3.2 (apr 9 2007)
 - Disable STDOUT when loading applications classes, avoiding 
   messing up the DOT output.
   (Thanks to Sebastien Auvray, http://tnlessone.wordpress.com/)
 
-
-Version 0.3.1 (apr 9 2007)
+== Version 0.3.1 (apr 9 2007)
 - Release again for fix an error in .gem file
 
-
-Version 0.3.0 (apr 9 2007)
+== Version 0.3.0 (apr 9 2007)
 - Major code rewrite 
   (More OO style)
 - Using Ruby's optparse to parse commandline options
@@ -71,20 +66,17 @@ Version 0.3.0 (apr 9 2007)
 - Added -o flag for file output.
 - Minor cosmetic changes.
 
-
-Version 0.2.0 (apr 8 2007)
+== Version 0.2.0 (apr 8 2007)
 - Differentiate classes from modules
 - Added "-m" flag for considering modules
 - Draw double-headed arrows for habtm and has_many, :through associations
 - Fix inheritance support for non ActiveRecord::Base classes on model 
   diagrams
 
-
-Version 0.1.2 (apr 7 2007)
+== Version 0.1.2 (apr 7 2007)
 - Documentation moved from script header to README
 
-
-Version 0.1.1 (apr 5 2007)
+== Version 0.1.1 (apr 5 2007)
 - Changed default graph label fontsize to 14.
 - Better error handling.
 - Minor cosmetic changes.
@@ -92,6 +84,5 @@ Version 0.1.1 (apr 5 2007)
   (Inspired in RAV, http://rav.rubyforge.org/)
 - RailRoad version included in diagrams' label.
 
-
-Version 0.1.0 (apr 2 2007)
+== Version 0.1.0 (apr 2 2007)
 - Initial release.

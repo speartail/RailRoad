@@ -1,3 +1,7 @@
+Version 0.1.2 (apr 7 2007)
+- Documentation moved from script header to README
+
+
 Version 0.1.1 (apr 5 2007)
 - Changed default graph label fontsize to 14.
 - Better error handling.

@@ -1,3 +1,6 @@
+Version 0.3.3 (apr 10 2007)
+- Code cleanup 
+
 Version 0.3.2 (apr 9 2007)
 - Disable STDOUT when loading applications classes, avoiding 
   messing up the DOT output.

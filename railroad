@@ -16,76 +16,75 @@
 
 APP_NAME  = "railroad"
 APP_HUMAN_NAME = "RailRoad"
-APP_VERSION   = [0,3,2]
+APP_VERSION   = [0,3,3]
 COPYRIGHT = "Copyright (C) 2007 Javier Smaldone"
 
+require 'ostruct'
 
-# Command line options parser
-class OptionsParser
+# Command line options structure
+class OptionsStruct < OpenStruct
 
   require 'optparse'
-  require 'ostruct'
 
-  # Parse arguments from command line
-  def self.parse(args)
+  def initialize
+    init_options = { :all => false,
+                     :brief => false,
+                     :inheritance => false,
+                     :join => false,
+                     :label => false,
+                     :modules => false,
+                     :hide_types => false,
+                     :hide_public => false,
+                     :hide_protected => false,
+                     :hide_private => false,
+                     :command => '' }
+    super(init_options)
+  end # initialize
 
-    options = OpenStruct.new
-
-    options.all = false
-    options.brief = false
-    options.inheritance = false
-    options.join = false
-    options.label = false
-    options.modules = false
-    options.hide_types = false
-    options.hide_public = false
-    options.hide_protected = false
-    options.hide_private = false
-    options.command = ''
-
-    opts = OptionParser.new do |opts|
+  def parse(args)
+    @opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: #{APP_NAME} [options] command"
       opts.separator ""
       opts.separator "Common options:"
       opts.on("-b", "--brief", "Generate compact diagram", 
               "  (no attributes nor methods)") do |b|
-        options.brief = b
+        self.brief = b
       end
       opts.on("-i", "--inheritance", "Include inheritance relations") do |i|
-        options.inheritance = i
+        self.inheritance = i
       end
       opts.on("-l", "--label", "Add a label with diagram information", 
               "  (type, date, migration, version)") do |l|
-        options.label = l
+        self.label = l
       end
       opts.on("-o", "--output FILE", "Write diagram to file FILE") do |f|
-        options.output = f
+        self.output = f
       end
       opts.separator ""
       opts.separator "Models diagram options:"
       opts.on("-a", "--all", "Include all models", 
               "  (not only ActiveRecord::Base derived)") do |a|
-        options.all = a
+        self.all = a
       end
       opts.on("--hide-types", "Hide attributes type") do |h|
-        options.hide_types = h
+        self.hide_types = h
       end
       opts.on("-j", "--join", "Concentrate edges") do |j|
-        options.join = j
+        self.join = j
       end
       opts.on("-m", "--modules", "Include modules") do |m|
-        options.modules = m
+        self.modules = m
       end
       opts.separator ""
       opts.separator "Controllers diagram options:"
       opts.on("--hide-public", "Hide public methods") do |h|
-        options.hide_public = h
+        self.hide_public = h
       end
       opts.on("--hide-protected", "Hide protected methods") do |h|
-        options.hide_protected = h
+        @options.hide_protected = h
       end
       opts.on("--hide-private", "Hide private methods") do |h|
-        options.hide_private = h
+        @options.hide_private = h
       end
       opts.separator ""
       opts.separator "Other options:"
@@ -102,50 +101,51 @@ class OptionsParser
       opts.separator ""
       opts.separator "Commands (you must supply one of these):"
       opts.on("-M", "--models", "Generate models diagram") do |c|
-         if options.command == 'controllers'
-           STDERR.print "Error: Can't generate models AND controllers diagram\n\n"
+         if self.command == 'controllers'
+           STDERR.print "Error: Can't generate models AND " + 
+                        "controllers diagram\n\n"
            exit 1
          else 
-           options.command = 'models'        
+           self.command = 'models'        
          end
       end
       opts.on("-C", "--controllers", "Generate controllers diagram") do |c|
-         if options.command == 'models'
-           STDERR.print "Error: Can't generate models AND controllers diagram\n\n"
+         if self.command == 'models'
+           STDERR.print "Error: Can't generate models AND " +
+                        "controllers diagram\n\n"
            exit 1
          else 
-           options.command = 'controllers'        
+           self.command = 'controllers'        
          end
       end
       opts.separator ""
-      opts.separator "For bug reporting instructions and additional information, please see:"
+      opts.separator "For bug reporting and additional information, please see:"
       opts.separator "http://railroad.rubyforge.org"
     end
 
     begin
-      opts.parse!(args)
+      @opt_parser.parse!(args)
     rescue OptionParser::AmbiguousOption
-      option_error "Ambiguous option", opts 
+      option_error "Ambiguous option"
     rescue OptionParser::InvalidOption
-      option_error "Invalid option", opts
+      option_error "Invalid option"
     rescue OptionParser::InvalidArgument
-      option_error "Invalid argument", opts
+      option_error "Invalid argument"
     rescue OptionParser::MissingArgument
-      option_error "Missing argument", opts
+      option_error "Missing argument"
     rescue
-      option_error "Unknown error", opts
+      option_error "Unknown error"
     end
-    options
-  end  # self.parse
- 
+  end  # initialize
+
   private 
 
-  def self.option_error(msg, opts)
-    STDERR.print "Error: #{msg}\n\n #{opts}\n"
+  def option_error(msg)
+    STDERR.print "Error: #{msg}\n\n #{@opt_parser}\n"
     exit 1
   end
 
-end  # class OptionsParser
+end  # class OptionsStruct
 
 
 # Root class for RailRoad diagrams
@@ -154,6 +154,7 @@ class AppDiagram
   def initialize(options)
     @options = options
     load_environment
+    load_classes
   end
 
   private 
@@ -174,6 +175,13 @@ class AppDiagram
     STDOUT.reopen(@old_stdout)
   end
 
+  # Print diagram header
+  def print_header(type)
+    print "digraph #{type.downcase}_diagram {\n" +
+          "\tgraph[overlap=false, splines=true]\n"
+    print_info(type) if @options.label
+  end
+  
 
   # Print diagram label
   def print_info(type)
@@ -184,7 +192,19 @@ class AppDiagram
           ", fontsize=14]\n"
   end
 
-  # Print error when loading application classes
+  # Print an edge
+  def print_edge(from, to, attributes)
+    print "\t#{node(from)} -> #{node(to)} [#{attributes}]\n"
+  end
+
+  # Print a node
+  def print_node(name, attributes=nil)
+    print "\t#{node(name)}"
+    print " [#{attributes}]" if attributes && attributes != ''
+    print "\n"
+  end
+
+  # Print error when loading Rails application
   def print_error(type)
     STDERR.print "Error loading #{type}.\n  (Are you running " +
                  "#{APP_NAME} on the aplication's root directory?)\n\n"
@@ -198,7 +218,7 @@ class AppDiagram
       enable_stdout
     rescue LoadError
       enable_stdout
-      print_error "app environment"
+      print_error "application environment"
       raise
     end
   end
@@ -209,28 +229,22 @@ end # class AppDiagram
 # RailRoad models diagram
 class ModelsDiagram < AppDiagram
 
-  # Generate models diagram
-  def generate
-
-    load_classes
-
-    # DOT diagram header
-    print "digraph models_diagram {\n" 
-    print "\tgraph[concentrate=true]\n" if @options.join
-    print_info "Models" if @options.label
-
+  def initialize(options)
+    super options 
     # Processed habtm associations
     @habtm = []
+  end
 
+  # Generate models diagram
+  def generate
+    print_header 'Models'
     models_files = Dir.glob("app/models/**/*.rb")
     models_files.each do |m|
       # Extract the class name from the file name
-      current_class = m.split('/')[2..-1].join('/').split('.').first.camelize.constantize
-      process_class current_class  
+      class_name = m.split('/')[2..-1].join('/').split('.').first.camelize
+      process_class class_name.constantize  
     end 
     print "}\n"
-
-
   end # generate
 
   private
@@ -251,50 +265,49 @@ class ModelsDiagram < AppDiagram
   # Process model class
   def process_class(current_class)
 
-    printed = false
+    class_printed = false
     
     # Is current_clas derived from ActiveRecord::Base?
     if current_class.respond_to?'reflect_on_all_associations'
 
       # Print the node
       if @options.brief
-        print "\t#{node(current_class.name)}\n"
+        node_attrib = ''
       else 
-        print "\t#{node(current_class.name)} " +
-              "[shape=Mrecord, label=\"{#{current_class.name}|"
+        node_attrib = 'shape=Mrecord, label="{' + current_class.name + '|'
         current_class.content_columns.each do |a|
-          print "#{a.name}"
-          print " :#{a.type.to_s}" unless @options.hide_types
-          print "\\l" 
+          node_attrib += a.name
+          node_attrib += ' :' + a.type.to_s unless @options.hide_types
+          node_attrib += '\l'
         end
-        print "}\"]\n"
+        node_attrib += '}"'
       end
-      printed = true
+      print_node current_class.name, node_attrib
+      class_printed = true
       # Iterate over the class associations
-      current_class.reflect_on_all_associations.each { |a|
+      current_class.reflect_on_all_associations.each do |a|
         process_association(current_class, a)
-      }
+      end
     elsif @options.all && (current_class.is_a? Class)
       # Not ActiveRecord::Base model
       if @options.brief
-        print "\t#{node(current_class.name)} [shape=box]\n"
+        node_attrib = 'shape=box'
       else 
-        print "\t#{node(current_class.name)}" +
-              "[shape=record, label=\"{#{current_class.name}|}\"]\n"
+        node_attrib = 'shape=record, label="{' + current_class.name + '|}"'
       end
-      printed = true
+      print_node current_class.name, node_attrib
+      class_printed = true
     elsif @options.modules && (current_class.is_a? Module)
-        print "\t#{node(current_class.name)}" +
-              "[shape=box, style=dotted, label=\"#{current_class.name}\"]\n"      
+        print_node current_class.name, 
+                   'shape=box, style=dotted, label="' + current_class.name + '"'        
     end
 
     # Only consider meaningful inheritance relations for printed classes
-    if @options.inheritance && printed && 
+    if @options.inheritance && class_printed && 
        (current_class.superclass != ActiveRecord::Base) &&
        (current_class.superclass != Object)
-      print "\t\t#{node(current_class.name)} -> " +
-            "#{node(current_class.superclass.name)}" +
-            " [arrowhead=\"onormal\"]\n"
+      print_edge(current_class.name, current_class.superclass.name, 
+                 'arrowhead="onormal"')
     end      
 
   end # process_class
@@ -302,38 +315,31 @@ class ModelsDiagram < AppDiagram
   # Process model association
   def process_association(current_class, association)
 
+    # Skip "belongs_to" associations
+    return if association.macro.to_s == 'belongs_to'
+ 
+    assoc_attrib = ""
+    assoc_name = ""
     # Only non standard association names needs a label
     if association.class_name != association.name.to_s.singularize.camelize
-      params = "label=\"#{association.name.to_s}\", "
-    else
-      params = ""
+      association_name = association.name.to_s
+      assoc_attrib += 'label="' + association_name + '", '
     end
 
-    # Skip "belongs_to" associations
-    if association.macro.to_s != 'belongs_to'
-      # Put a tail label with the association arity
-      if association.macro.to_s == 'has_one' 
-        params += 'taillabel="1"'
-      else
-        params += 'taillabel="n"'
-      end
+    # Tail label with the association arity
+    assoc_attrib += association.macro.to_s == 'has_one' ? 'taillabel="1"' : 'taillabel="n"'
 
-      # Use double-headed arrows for habtm and has_many, :through
-      if association.macro.to_s == 'has_and_belongs_to_many' ||
-         (association.macro.to_s == 'has_many' && association.options[:through])
-        if @habtm.include? "#{association.class_name} -> #{current_class.name}"
-	  # habtm association already considered
-          return
-        else
-          params += ', headlabel="n", arrowtail="normal"'
-          @habtm << "#{current_class.name} -> #{association.class_name}"
-        end
-      end  
-      # Print the edge
-      print "\t\t#{node(current_class.name)} -> " +
-            "#{node(association.class_name)} " +
-            "[ #{params} ]\n"
-    end
+    # Use double-headed arrows for habtm and has_many, :through
+    if association.macro.to_s == 'has_and_belongs_to_many' ||
+       (association.macro.to_s == 'has_many' && association.options[:through])
+      
+      # Skip habtm associations already considered
+      return if @habtm.include? [association.class_name, current_class.name, 
+                          association_name]
+      @habtm << [current_class.name, association.class_name,association_name]
+      assoc_attrib += ', headlabel="n", arrowtail="normal"'
+    end  
+    print_edge(current_class.name, association.class_name, assoc_attrib)
   end # process_association
 
 end # class ModelsDiagram
@@ -341,33 +347,25 @@ end # class ModelsDiagram
 
 # RailRoad controllers diagram
 class ControllersDiagram < AppDiagram
+ 
+  def initialize(options)
+    super options
+    @app_controller = ApplicationController
+  end
 
   # Generate controllers diagram
   def generate
 
-    load_classes
-
-    # DOT diagram header
-    print "digraph controllers_diagram {\n" +
-          "\tgraph[overlap=false, splines=true]\n"
-    print_info "Controllers" if @options.label
-
-    @app_controller = ApplicationController
+    print_header 'Controllers'
 
     controllers_files = Dir.glob("app/controllers/**/*_controller.rb")
     controllers_files << 'app/controllers/application.rb'
     controllers_files.each do |c|
-
       # Extract the class name from the file name
       class_name = c.split('/')[2..-1].join('/').split('.').first.camelize
-
       # ApplicationController's file is 'application.rb'
-      if class_name == 'Application' 
-        class_name = 'ApplicationController' 
-      end 
-
+      class_name += 'Controller' if class_name == 'Application'
       process_class class_name.constantize
-
     end 
     print "}\n"
   end # generate
@@ -380,9 +378,7 @@ class ControllersDiagram < AppDiagram
       disable_stdout
       # ApplicationController must be loaded first
       require "app/controllers/application.rb" 
-      Dir.glob("app/controllers/**/*_controller.rb") do |c| 
-        require c
-      end
+      Dir.glob("app/controllers/**/*_controller.rb") {|c| require c }
       enable_stdout
     rescue LoadError
       enable_stdout
@@ -394,35 +390,35 @@ class ControllersDiagram < AppDiagram
   # Proccess controller class
   def process_class(current_class)
 
-    # Print the node
     if @options.brief
-      print "\t#{node(current_class.name)}\n"
+      print_node  current_class.name
+
     elsif current_class.is_a? Class 
-      print "\t#{node(current_class.name)} " +
-            "[shape=Mrecord, label=\"{#{current_class.name}|"
+      node_attrib = 'shape=Mrecord, label="{' + current_class.name + '|'
       current_class.public_instance_methods(false).sort.each { |m|
-        print "#{m}\\l" 
+        node_attrib += m + '\l' 
       } unless @options.hide_public
-      print "|" 
+      node_attrib += '|'
       current_class.protected_instance_methods(false).sort.each { |m|
-        print "#{m}\\l" 
+        node_attrib += m + '\l'
       } unless @options.hide_protected
-      print "|" 
+      node_attrib += '|'
       current_class.private_instance_methods(false).sort.each { |m|
-        print "#{m}\\l" 
+        node_attrib += m + '\l'
       } unless @options.hide_private
-      print "}\"]\n" 
-    elsif @options.modules && (current_class.is_a? Module)
-        print "\t#{node(current_class.name)}" +
-              "[shape=box, style=dotted, label=\"#{current_class.name}\"]\n"      
+      node_attrib += '}"' 
+      print_node current_class.name, node_attrib 
+
+    elsif @options.modules && current_class.is_a?(Module)
+        print_node current_class.name, 
+                   'shape=box, style=dotted, label="' + current_class.name + '"'
     end
 
-    # Print the inheritance edge
+    # Print the inheritance edge (only for ApplicationControllers)
     if @options.inheritance && 
        (@app_controller.subclasses.include? current_class.name)
-      print "\t#{node(current_class.name)} -> " +
-            "#{node(current_class.superclass.name)} " +
-            "[arrowhead=\"onormal\"]\n"
+      print_edge(current_class.name, current_class.superclass.name, 
+                 'arrowhead="onormal"')
     end
 
   end # process_class
@@ -432,7 +428,9 @@ end # class ControllersDiagram
 
 # Main program
 
-options = OptionsParser.parse ARGV
+options = OptionsStruct.new
+
+options.parse ARGV
 
 if options.command == 'models'
   diagram = ModelsDiagram.new options
@@ -449,7 +447,7 @@ if options.output
   begin
      STDOUT.reopen(options.output)
   rescue
-     STDERR.print "Error: Cannot write to #{options.output}\n\n"
+     STDERR.print "Error: Cannot write diagram to #{options.output}\n\n"
      exit 2
   end
 end

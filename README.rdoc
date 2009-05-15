@@ -126,9 +126,18 @@ Then, 'rake doc:diagrams' produces 'doc/models.svg' and 'doc/controllers.svg'.
 
 = Requirements
 
-RailRoad has been tested with Ruby 1.8.5 and Rails 1.1.6 to 1.2.3
-applications. There is no additional requirements (nevertheless, all your
-Rails application requirements must be installed).
+RailRoad has been tested with the following Ruby and Rails versions
+
+Ruby
+* 1.8.5
+* 1.8.7
+
+Rails
+* 1.1.6 to 1.2.3
+* 2.3.2
+
+There are no additional requirements (nevertheless, all your Rails application
+requirements must be installed).
 
 In order to view/export the DOT diagrams, you'll need the processing tools
 from Graphviz.
@@ -143,10 +152,16 @@ RailRoad is distributed  under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2 of the 
 License, or (at your option) any later version.
 
-= Authors
+See LICENSE for details.
 
-Javier Smaldone 
-(javier -at- smaldone -dot- com -dot- ar, http://blog.smaldone.com.ar )
+== Copyright
 
-Peter Hoeg
-(peter hoeg com)
+Copyright (c) 2007-2008 Javier Smaldone
+Copyright (c) 2009 Peter Hoeg
+
+See LICENSE for details.
+
+
+== Authors
+
+See AUTHORS for details.

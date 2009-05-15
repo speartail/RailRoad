@@ -9,6 +9,10 @@ require 'railroad/app_diagram'
 # RailRoad controllers diagram
 class ControllersDiagram < AppDiagram
  
+  # as of Rails 2.3 the file is no longer application.rb but instead
+  # application_controller.rb
+  APP_CONTROLLER = File.exist?('app/controllers/application.rb') ? 'app/controllers/application.rb' : 'app/controllers/application_controller.rb'
+
   def initialize(options)
     #options.exclude.map! {|e| "app/controllers/" + e}
     super options
@@ -20,10 +24,11 @@ class ControllersDiagram < AppDiagram
     STDERR.print "Generating controllers diagram\n" if @options.verbose
 
     files = Dir.glob("app/controllers/**/*_controller.rb") - @options.exclude
-    files << 'app/controllers/application.rb'
+    # only add APP_CONTROLLER if it isn't already included from the glob above
+    files << APP_CONTROLLER unless files.include? APP_CONTROLLER
     files.each do |f|
       class_name = extract_class_name(f)
-      # ApplicationController's file is 'application.rb'
+      # ApplicationController's file is 'application.rb' in Rails < 2.3
       class_name += 'Controller' if class_name == 'Application'
       process_class class_name.constantize
     end 
@@ -36,7 +41,7 @@ class ControllersDiagram < AppDiagram
     begin
       disable_stdout
       # ApplicationController must be loaded first
-      require "app/controllers/application.rb" 
+      require APP_CONTROLLER
       files = Dir.glob("app/controllers/**/*_controller.rb") - @options.exclude
       files.each {|c| require c }
       enable_stdout

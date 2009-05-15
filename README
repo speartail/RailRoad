@@ -13,39 +13,42 @@ output to a .dot file or pipe it to the dot or neato utilities to produce a
 graphic. Model diagrams are intended to be processed using dot and
 controller diagrams are best processed using neato.
 
-    railroad [options] [command]
- 
-Options:
+    railroad [options] command
 
-    -a, --all
-      Include all models (not ActiveRecord::Base derived)
-    -b, --brief
-      Generate compact diagram (no attributes nor methods)
-    -c, --compact
-      Concentrate edges
-    -i, --inherit
-      Include inheritance relations
-    -l, --label
-      Add a label with diagram information (type, date, version)
-    -m, --modules
-      Include modules
-    -h, --help
-      Display this help message and exit
-    -v, --version
-      Display version information and exit
+Common options:
+    -b, --brief                      Generate compact diagram
+                                       (no attributes nor methods)
+    -i, --inheritance                Include inheritance relations
+    -l, --label                      Add a label with diagram information
+                                       (type, date, migration, version)
+    -o, --output FILE                Write diagram to file FILE
 
-Commands:
+Models diagram options:
+    -a, --all                        Include all models
+                                       (not only ActiveRecord::Base derived)
+        --hide-types                 Hide attributes type
+    -j, --join                       Concentrate edges
+    -m, --modules                    Include modules
 
-    -M
-      Generate models diagram
-    -C
-      Generate controllers diagram
+Controllers diagram options:
+        --hide-public                Hide public methods
+        --hide-protected             Hide protected methods
+        --hide-private               Hide private methods
+
+Other options:
+    -h, --help                       Show this message
+        --version                    Show version and copyright
+
+Commands (you must supply one of these):
+    -M, --models                     Generate models diagram
+    -C, --controllers                Generate controllers diagram
+
 
 Examples:
 
-    railroad -M > models.dot
+    railroad -o models.dot -M
       Produces a models diagram to the file 'models.dot'
-    railroad -a -i -M > full_models.dot
+    railroad -a -i -o full_models.dot -M
       Models diagram with all classes showing inheritance relations
     railroad -M | dot -Tsvg > models.svg
       Model diagram in SVG format

@@ -1,3 +1,13 @@
+Version 0.3.0 (apr 9 2007)
+- Major code rewrite 
+  (More OO style)
+- Using Ruby's optparse to parse commandline options
+- Added flags for including (excluding) controllers methods
+  based on visibility
+- Added -o flag for file output.
+- Minor cosmetic changes.
+
+
 Version 0.2.0 (apr 8 2007)
 - Differentiate classes from modules
 - Added "-m" flag for considering modules

@@ -1,21 +1,15 @@
 = Changes
-== Version 0.5.5 (may 15 2009)
-- Support showing belongs_to relationships when generating models
 
-== Version 0.5.4 (may 15 2009)
+== Version 0.5.1 to 0.5.6 (may 15 2009)
+- Make sure the proper version tag is set everywhere
+- Support showing belongs_to relationships when generating models
 - Transitioned to using Jeweler for gem management
 - Shuffled some file locations around
 - NOTE: there are NO tests passing yet, but this gem was developed without 'em
-
-== Version 0.5.3 (may 15 2009)
 - Fixed broken gemspec
-
-== Version 0.5.2 (may 15 2009)
 - Added ChangeLog entries
 - Added AUTHORS entry
 - Updated railroad version entry
-
-== Version 0.5.1 (may 15 2009)
 - Support rails v2.3
 - Support namespaced models/controllers
 

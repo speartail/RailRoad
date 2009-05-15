@@ -1,7 +1,7 @@
 # RailRoad - RoR diagrams generator
 # http://railroad.rubyforge.org
 #
-# Copyright 2007 - Javier Smaldone (http://www.smaldone.com.ar)
+# Copyright 2007-2008 - Javier Smaldone (http://www.smaldone.com.ar)
 # See COPYING for more details
 
 require 'ostruct'
@@ -19,10 +19,13 @@ class OptionsStruct < OpenStruct
                      :join => false,
                      :label => false,
                      :modules => false,
+                     :hide_magic => false,
                      :hide_types => false,
                      :hide_public => false,
                      :hide_protected => false,
                      :hide_private => false,
+                     :plugins_models => false,
+                     :root => '',
                      :transitive => false,
                      :verbose => false,
                      :xmi => false,
@@ -39,8 +42,7 @@ class OptionsStruct < OpenStruct
               "  (no attributes nor methods)") do |b|
         self.brief = b
       end
-      opts.on("-e", "--exclude file1[,fileN]", Array, "Exclude files", 
-              "  (relative path to 'app/models/' or", "   'app/controllers/')") do |list|
+      opts.on("-e", "--exclude file1[,fileN]", Array, "Exclude given files") do |list|
         self.exclude = list
       end
       opts.on("-i", "--inheritance", "Include inheritance relations") do |i|
@@ -52,6 +54,9 @@ class OptionsStruct < OpenStruct
       end
       opts.on("-o", "--output FILE", "Write diagram to file FILE") do |f|
         self.output = f
+      end
+      opts.on("-r", "--root PATH", "Set PATH as the application root") do |r|
+        self.root = r
       end
       opts.on("-v", "--verbose", "Enable verbose output", 
               "  (produce messages to STDOUT)") do |v|
@@ -67,6 +72,9 @@ class OptionsStruct < OpenStruct
               "  (not only ActiveRecord::Base derived)") do |a|
         self.all = a
       end
+      opts.on("--hide-magic", "Hide magic field names") do |h|
+        self.hide_magic = h
+      end
       opts.on("--hide-types", "Hide attributes type") do |h|
         self.hide_types = h
       end
@@ -75,6 +83,9 @@ class OptionsStruct < OpenStruct
       end
       opts.on("-m", "--modules", "Include modules") do |m|
         self.modules = m
+      end
+      opts.on("-p", "--plugins-models", "Include plugins models") do |p|
+        self.plugins_models = p
       end
       opts.on("-t", "--transitive", "Include transitive associations",
               "(through inheritance)") do |t|
@@ -106,26 +117,33 @@ class OptionsStruct < OpenStruct
       opts.separator ""
       opts.separator "Commands (you must supply one of these):"
       opts.on("-M", "--models", "Generate models diagram") do |c|
-        if self.command == 'controllers'
-          STDERR.print "Error: Can't generate models AND " + 
-                       "controllers diagram\n\n"
+        if self.command != ''
+          STDERR.print "Error: Can only generate one diagram type\n\n"
           exit 1
         else 
           self.command = 'models'        
         end
       end 
       opts.on("-C", "--controllers", "Generate controllers diagram") do |c|
-        if self.command == 'models'
-          STDERR.print "Error: Can't generate models AND " +
-                       "controllers diagram\n\n"
+        if self.command != ''
+          STDERR.print "Error: Can only generate one diagram type\n\n"
           exit 1
         else 
           self.command = 'controllers'        
         end
       end
+      # From Ana Nelson's patch
+      opts.on("-A", "--aasm", "Generate \"acts as state machine\" diagram") do |c|
+        if self.command == 'controllers'
+          STDERR.print "Error: Can only generate one diagram type\n\n"
+          exit 1
+        else    
+          self.command = 'aasm'
+        end
+      end        
       opts.separator ""
       opts.separator "For bug reporting and additional information, please see:"
-      opts.separator "http://railroad.rubyforge.org"
+      opts.separator "http://railroad.rubyforge.org/"
     end # do
 
     begin

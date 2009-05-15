@@ -1,7 +1,7 @@
 # RailRoad - RoR diagrams generator
 # http://railroad.rubyforge.org
 #
-# Copyright 2007 - Javier Smaldone (http://www.smaldone.com.ar)
+# Copyright 2007-2008 - Javier Smaldone (http://www.smaldone.com.ar)
 # See COPYING for more details
 
 require 'railroad/app_diagram'
@@ -10,7 +10,7 @@ require 'railroad/app_diagram'
 class ControllersDiagram < AppDiagram
  
   def initialize(options)
-    options.exclude.map! {|e| "app/controllers/" + e}
+    #options.exclude.map! {|e| "app/controllers/" + e}
     super options
     @graph.diagram_type = 'Controllers'
   end

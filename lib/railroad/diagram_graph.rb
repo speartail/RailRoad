@@ -1,7 +1,7 @@
 # RailRoad - RoR diagrams generator
 # http://railroad.rubyforge.org
 #
-# Copyright 2007 - Javier Smaldone (http://www.smaldone.com.ar)
+# Copyright 2007-2008 - Javier Smaldone (http://www.smaldone.com.ar)
 # See COPYING for more details
 
 
@@ -97,6 +97,9 @@ class DiagramGraph
            options = '' 
       when 'module'
            options = 'shape=box, style=dotted, label="' + name + '"'
+      when 'aasm'
+           # Return subgraph format
+           return "subgraph cluster_#{name.downcase} {\n\tlabel = #{quote(name)}\n\t#{attributes.join("\n  ")}}"
     end # case
     return "\t#{quote(name)} [#{options}]\n"
   end # dot_node
@@ -106,13 +109,18 @@ class DiagramGraph
     options =  name != '' ? "label=\"#{name}\", " : ''
     case type
       when 'one-one'
-           options += 'taillabel="1"'
+           #options += 'taillabel="1"'
+           options += 'arrowtail=odot, arrowhead=dot, dir=both'
       when 'one-many'
-           options += 'taillabel="n"'                    
+	   #options += 'taillabel="n"'
+           options += 'arrowtail=crow, arrowhead=dot, dir=both'                    
       when 'many-many'
-           options += 'taillabel="n", headlabel="n", arrowtail="normal"'
+           #options += 'taillabel="n", headlabel="n", arrowtail="normal"'
+           options += 'arrowtail=crow, arrowhead=crow, dir=both'
       when 'is-a'
            options += 'arrowhead="none", arrowtail="onormal"'
+      when 'event'
+           options += "fontsize=10"
     end
     return "\t#{quote(from)} -> #{quote(to)} [#{options}]\n"
   end # dot_edge

@@ -18,9 +18,7 @@ controller diagrams are best processed using neato.
 Common options:
     -b, --brief                      Generate compact diagram
                                        (no attributes nor methods)
-    -e, --exclude file1[,fileN]      Exclude files
-                                       (relative path to 'app/models/' or
-                                        'app/controllers/')
+    -e, --exclude file1[,fileN]      Exclude given files
     -i, --inheritance                Include inheritance relations
     -l, --label                      Add a label with diagram information
                                        (type, date, migration, version)
@@ -31,9 +29,11 @@ Common options:
 Models diagram options:
     -a, --all                        Include all models
                                        (not only ActiveRecord::Base derived)
+        --hide-magic                 Hide magic field names
         --hide-types                 Hide attributes type
     -j, --join                       Concentrate edges
     -m, --modules                    Include modules
+    -p, --plugins-models             Include plugins models
     -t, --transitive                 Include transitive associations
                                      (through inheritance)
 
@@ -50,6 +50,7 @@ Other options:
 
     -M, --models                     Generate models diagram
     -C, --controllers                Generate controllers diagram
+    -A, --aasm                       Generate "acts as state machine" diagram
 
 
 == Examples

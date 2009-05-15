@@ -6,7 +6,7 @@
 #   RailRoad generates models and controllers diagrams in DOT language
 #   for a Rails application.
 #
-# Copyright 2007 - Javier Smaldone (http://www.smaldone.com.ar)
+# Copyright 2007-2008 - Javier Smaldone (http://www.smaldone.com.ar)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,21 +16,28 @@
 
 APP_NAME       = "railroad"
 APP_HUMAN_NAME = "RailRoad"
-APP_VERSION    = [0,4,1]
-COPYRIGHT      = "Copyright (C) 2007 Javier Smaldone"
+APP_VERSION    = [0,5,0]
+COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone"
 
 require 'railroad/options_struct'
 require 'railroad/models_diagram'
 require 'railroad/controllers_diagram'
+require 'railroad/aasm_diagram'
 
 options = OptionsStruct.new
 
 options.parse ARGV
 
+old_dir = Dir.pwd
+
+Dir.chdir(options.root) if options.root != ''
+
 if options.command == 'models'
   diagram = ModelsDiagram.new options
 elsif options.command == 'controllers'
   diagram = ControllersDiagram.new options
+elsif options.command == 'aasm'
+  diagram = AasmDiagram.new options
 else
   STDERR.print "Error: You must supply a command\n" +
                "  (try #{APP_NAME} -h)\n\n"
@@ -38,4 +45,8 @@ else
 end
 
 diagram.generate
+
+Dir.chdir(old_dir)
+
 diagram.print
+

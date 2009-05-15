@@ -1,7 +1,7 @@
 # RailRoad - RoR diagrams generator
 # http://railroad.rubyforge.org
 #
-# Copyright 2007 - Javier Smaldone (http://www.smaldone.com.ar)
+# Copyright 2007-2008 - Javier Smaldone (http://www.smaldone.com.ar)
 # See COPYING for more details
 
 require 'railroad/app_diagram'
@@ -10,7 +10,7 @@ require 'railroad/app_diagram'
 class ModelsDiagram < AppDiagram
 
   def initialize(options)
-    options.exclude.map! {|e| "app/models/" + e}
+    #options.exclude.map! {|e| "app/models/" + e}
     super options 
     @graph.diagram_type = 'Models'
     # Processed habtm associations
@@ -20,7 +20,9 @@ class ModelsDiagram < AppDiagram
   # Process model files
   def generate
     STDERR.print "Generating models diagram\n" if @options.verbose
-    files = Dir.glob("app/models/**/*.rb") - @options.exclude
+    files = Dir.glob("app/models/**/*.rb")
+    files += Dir.glob("vendor/plugins/**/app/models/*.rb") if @options.plugins_models    
+    files -= @options.exclude
     files.each do |f| 
       process_class extract_class_name(f).constantize
     end
@@ -32,7 +34,9 @@ class ModelsDiagram < AppDiagram
   def load_classes
     begin
       disable_stdout
-      files = Dir.glob("app/models/**/*.rb") - @options.exclude
+      files = Dir.glob("app/models/**/*.rb")
+      files += Dir.glob("vendor/plugins/**/app/models/*.rb") if @options.plugins_models
+      files -= @options.exclude
       files.each {|m| require m }
       enable_stdout
     rescue LoadError
@@ -48,16 +52,36 @@ class ModelsDiagram < AppDiagram
     STDERR.print "\tProcessing #{current_class}\n" if @options.verbose
 
     generated = false
-    
+        
     # Is current_clas derived from ActiveRecord::Base?
     if current_class.respond_to?'reflect_on_all_associations'
+
+
       node_attribs = []
       if @options.brief || current_class.abstract_class?
         node_type = 'model-brief'
       else 
         node_type = 'model'
+
         # Collect model's content columns
-        current_class.content_columns.each do |a|
+
+	content_columns = current_class.content_columns
+	
+	if @options.hide_magic 
+          # From patch #13351
+          # http://wiki.rubyonrails.org/rails/pages/MagicFieldNames
+          magic_fields = [
+          "created_at", "created_on", "updated_at", "updated_on",
+          "lock_version", "type", "id", "position", "parent_id", "lft", 
+          "rgt", "quote", "template"
+          ]
+          magic_fields << current_class.table_name + "_count" if current_class.respond_to? 'table_name' 
+          content_columns = current_class.content_columns.select {|c| ! magic_fields.include? c.name}
+        else
+          content_columns = current_class.content_columns
+        end
+        
+        content_columns.each do |a|
           content_column = a.name
           content_column += ' :' + a.type.to_s unless @options.hide_types
           node_attribs << content_column
@@ -104,7 +128,11 @@ class ModelsDiagram < AppDiagram
     return if assoc.macro.to_s == 'belongs_to'
 
     # Only non standard association names needs a label
-    if assoc.class_name == assoc.name.to_s.singularize.camelize
+    
+    # from patch #12384
+    # if assoc.class_name == assoc.name.to_s.singularize.camelize
+    assoc_class_name = (assoc.class_name.respond_to? 'underscore') ? assoc.class_name.underscore.singularize.camelize : assoc.class_name 
+    if assoc_class_name == assoc.name.to_s.singularize.camelize
       assoc_name = ''
     else
       assoc_name = assoc.name.to_s
@@ -119,7 +147,9 @@ class ModelsDiagram < AppDiagram
       assoc_type = 'many-many'
       @habtm << [class_name, assoc.class_name, assoc_name]
     end  
-    @graph.add_edge [assoc_type, class_name, assoc.class_name, assoc_name]
+    # from patch #12384    
+    # @graph.add_edge [assoc_type, class_name, assoc.class_name, assoc_name]
+    @graph.add_edge [assoc_type, class_name, assoc_class_name, assoc_name]    
   end # process_association
 
 end # class ModelsDiagram

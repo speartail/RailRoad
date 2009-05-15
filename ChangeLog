@@ -1,5 +1,20 @@
+Version 0.5.0 (may 10 2008)
+- Changed model relationships representation (feature request #10898)
+- Added support for plugins models (-p) (feature request #12742 by 
+  Chris Richards). Thanks to Elliot Smith.
+- Added support for irregular inflexions (from patch #12384). Thanks 
+  to Juan Ignacio Pumarino.
+- Added hidding of magic fields (--hide-magic) (from patch #13351)
+  Thanks to Hajime Baba.
+- Added -r option to set the application root path (request #12801).
+- The -e flag now requires full path to excluded files.
+- Added support for state machine diagram ("acts as state machine" plugin).
+  Thanks to Ana Nelson (she did all the work!).
+
+
 Version 0.4.1 (may 9 2008)
-- Fix a bug (class name treated as String).
+- Fix bug #17852 (class name treated as String).
+
 
 Version 0.4.0 (apr 25 2007)
 - Draw inheritance edges in reverse way

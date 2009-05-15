@@ -1,7 +1,7 @@
 # RailRoad - RoR diagrams generator
 # http://railroad.rubyforge.org
 #
-# Copyright 2007 - Javier Smaldone (http://www.smaldone.com.ar)
+# Copyright 2007-2008 - Javier Smaldone (http://www.smaldone.com.ar)
 # See COPYING for more details
 
 require 'railroad/diagram_graph'
@@ -81,7 +81,9 @@ class AppDiagram
 
   # Extract class name from filename
   def extract_class_name(filename)
-    filename.split('/')[2..-1].join('/').split('.').first.camelize
+    #filename.split('/')[2..-1].join('/').split('.').first.camelize
+    # Fixed by patch from ticket #12742
+    File.basename(filename).chomp(".rb").camelize
   end
 
 end # class AppDiagram

@@ -16,8 +16,8 @@
 
 APP_NAME       = "railroad"
 APP_HUMAN_NAME = "RailRoad"
-APP_VERSION    = [0,5,2]
-COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone"
+APP_VERSION    = [0,5,3]
+COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone, 2009 Peter Hoeg"
 
 require 'railroad/options_struct'
 require 'railroad/models_diagram'

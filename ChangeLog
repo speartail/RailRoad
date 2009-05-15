@@ -1,3 +1,11 @@
+Version 0.2.0 (apr 8 2007)
+- Differentiate classes from modules
+- Added "-m" flag for considering modules
+- Draw double-headed arrows for habtm and has_many, :through associations
+- Fix inheritance support for non ActiveRecord::Base classes on model 
+  diagrams
+
+
 Version 0.1.2 (apr 7 2007)
 - Documentation moved from script header to README
 

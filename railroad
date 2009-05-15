@@ -16,7 +16,7 @@
 
 @app_name  = "railroad"
 @app_human_name = "RailRoad"
-@version   = "0.1.2"
+@version   = "0.2.0"
 @copyright = "Copyright (C) 2007 Javier Smaldone"
 
 def print_help
@@ -25,8 +25,9 @@ def print_help
   print "  -a, --all\tInclude all models (not ActiveRecord::Base derived)\n"
   print "  -b, --brief\tGenerate compact diagram (no attributes)\n"
   print "  -c, --compact\tConcentrate edges (only for modules diagram)\n"
-  print "  -l, --label\tAdd a label with diagram info (type, date, version)\n"
   print "  -i, --inherit\tInclude inheritance relations\n"
+  print "  -l, --label\tAdd a label with diagram info (type, date, version)\n"
+  print "  -m, --modules\tInclude modules\n"
   print "  -h, --help\tDisplay this help message and exit\n"
   print "  -v, --version\tDisplay version information and exit\n\n"
   print "Commands:\n"
@@ -66,11 +67,15 @@ def generate_models
   print "\tgraph[concentrate=true]\n" if @compact
   print_info "Models" if @label
 
+  # Processed habtm associations
+  habtm = []
+
   models_files = Dir.glob("app/models/**/*.rb")
   models_files.each do |m|
     # Extract the class name from the file name
     current_class = m.split('/')[2..-1].join('/').split('.').first.camelize.constantize
 
+    printed = false
     # Is current_clas derived from ActiveRecord::Base?
     if current_class.respond_to?'reflect_on_all_associations'
 
@@ -85,6 +90,7 @@ def generate_models
         end
         print "}\"]\n"
       end
+      printed = true
 
       # Iterate over the class associations
       current_class.reflect_on_all_associations.each do |association|
@@ -105,6 +111,18 @@ def generate_models
             params += 'taillabel="n"'
           end
 
+          # Use double-headed arrows for habtm and has_many, :through
+          if association.macro.to_s == 'has_and_belongs_to_many' ||
+             (association.macro.to_s == 'has_many' && association.options[:through])
+            if habtm.include? "#{association.class_name} -> #{current_class.name}"
+	      # habtm association already considered
+              next
+            else
+              params += ', headlabel="n", arrowtail="normal"'
+              habtm << "#{current_class.name} -> #{association.class_name}"
+              STDERR.print "'#{current_class.name} -> #{association.class_name}'\n"
+            end
+          end  
           # Print the edge
           print "\t\t#{node(current_class.name)} -> "
           print "#{node(association.class_name)} "
@@ -112,14 +130,7 @@ def generate_models
         end
       end # Associations
 
-      if @inherit && (current_class.superclass != ActiveRecord::Base)
-        # Print the inheritance edge
-        print "\t\t#{node(current_class.name)} -> "
-	print "#{node(current_class.superclass.name)}"
-        print " [arrowhead=\"onormal\"]\n"
-      end      
-
-    elsif @all_classes
+    elsif @all_classes && (current_class.is_a? Class)
       # Not ActiveRecord::Base model
       if @brief
         print "\t#{node(current_class.name)} [shape=box]\n"
@@ -127,7 +138,20 @@ def generate_models
         print "\t#{node(current_class.name)}"
         print "[shape=record, label=\"{#{current_class.name}|}\"]\n"
       end
+      printed = true
+    elsif @modules && (current_class.is_a? Module)
+        print "\t#{node(current_class.name)}"
+        print "[shape=box, style=dotted, label=\"#{current_class.name}\"]\n"      
     end
+
+    # Only consider meaningful inheritance relations for printed classes
+    if @inherit && printed && (current_class.superclass != ActiveRecord::Base) &&
+       (current_class.superclass != Object)
+      print "\t\t#{node(current_class.name)} -> "
+      print "#{node(current_class.superclass.name)}"
+      print " [arrowhead=\"onormal\"]\n"
+    end      
+
   end # Dir
   print "}\n"
 end # generate_models
@@ -167,7 +191,7 @@ def generate_controllers
     # Print the node
     if @brief
       print "\t#{node(current_class.name)}\n"
-    else 
+    elsif current_class.is_a? Class 
       print "\t#{node(current_class.name)} "
       print "[shape=Mrecord, label=\"{#{current_class.name}|"
       current_class.public_instance_methods(false).sort.each do |m|
@@ -182,7 +206,11 @@ def generate_controllers
         print "#{m}\\l" 
       end
       print "}\"]\n"
+    elsif @modules && (current_class.is_a? Module)
+        print "\t#{node(current_class.name)}"
+        print "[shape=box, style=dotted, label=\"#{current_class.name}\"]\n"      
     end
+
     if @inherit && (app_controller.subclasses.include? current_class.name)
       # Print the inheritance edge
       print "\t#{node(current_class.name)} -> "
@@ -205,14 +233,15 @@ end
 @all_classes = ARGV.include?('--all') || ARGV.include?('-a')
 @brief = ARGV.include?('--brief') || ARGV.include?('-b')
 @compact = ARGV.include?('--compact') || ARGV.include?('-c')
-@label = ARGV.include?('--label') || ARGV.include?('-l')
 @inherit = ARGV.include?('--inherit') || ARGV.include?('-i')
+@label = ARGV.include?('--label') || ARGV.include?('-l')
+@modules = ARGV.include?('--modules') || ARGV.include?('-m')
 
-params = %w(-a --all -b --brief -c --compact -l --label -i --inherit -M -C)
+params = %w(-a --all -b --brief -c --compact -i --inherit -l --label -m --modules -M -C)
 error_params = ARGV - params
 if ! error_params.empty? 
   # Unknown parameter
-  STDERR.print "Error: wrong parameter(s) #{error_params}\n"
+  STDERR.print "Error: unknown parameter(s) #{error_params}\n"
   STDERR.print "(try '#{@app_name} --help')\n\n"
   exit 1
 end

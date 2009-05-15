@@ -23,10 +23,12 @@ Options:
       Generate compact diagram (no attributes nor methods)
     -c, --compact
       Concentrate edges
-    -l, --label
-      Add a label with diagram information (type, date, version)
     -i, --inherit
       Include inheritance relations
+    -l, --label
+      Add a label with diagram information (type, date, version)
+    -m, --modules
+      Include modules
     -h, --help
       Display this help message and exit
     -v, --version

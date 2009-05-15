@@ -1,6 +1,9 @@
 = Changes
 
-== Version 0.5.1 to 0.5.6 (may 15 2009)
+== Version 0.5.7 (May 16 2009)
+- Load the version automatically from VERSION.yml
+
+== Version 0.5.1 to 0.5.6 (May 15 2009)
 - Make sure the proper version tag is set everywhere
 - Support showing belongs_to relationships when generating models
 - Transitioned to using Jeweler for gem management

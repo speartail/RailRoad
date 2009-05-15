@@ -14,10 +14,17 @@
 # (at your option) any later version.
 #
 
+require File.dirname(__FILE__) + '/../lib/version'
+
 APP_NAME       = "railroad"
 APP_HUMAN_NAME = "RailRoad"
-APP_VERSION    = [0,5,6]
+APP_VERSION    = [RailRoad::VERSION::MAJOR, RailRoad::VERSION::MINOR, RailRoad::VERSION::PATCH]
 COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone, 2009 Peter Hoeg"
+
+if ARGV.first == '--version'
+  puts "#{APP_HUMAN_NAME} v#{RailRoad::VERSION::STRING}"
+  exit(0)
+end
 
 require 'options_struct'
 require 'models_diagram'
@@ -39,8 +46,9 @@ elsif options.command == 'controllers'
 elsif options.command == 'aasm'
   diagram = AasmDiagram.new options
 else
-  STDERR.print "Error: You must supply a command\n" +
-               "  (try #{APP_NAME} -h)\n\n"
+  STDERR.print "#{APP_HUMAN_NAME} v#{RailRoad::VERSION::STRING}\n" +
+    "Error: You must supply a command\n" +
+    "  (try #{APP_NAME} -h)\n\n"
   exit 1
 end
 

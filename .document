@@ -1,7 +1,7 @@
 README.rdoc
 CHANGELOG.rdoc
 AUTHORS.rdoc
+LICENSE.rdoc
 lib/**/*.rb
 bin/*
 features/**/*.feature
-LICENSE

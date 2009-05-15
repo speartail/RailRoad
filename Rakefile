@@ -5,10 +5,14 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "railroad"
+    gem.executables = "railroad"
     gem.email = ['peter@hoeg.com', 'p.hoeg@northwind.sg', 'javier@smaldone.com.ar']
     gem.homepage = "http://github.com/peterhoeg/RailRoad"
     gem.authors = ["Peter Hoeg", "Javier Smaldone"]
     gem.summary = "A DOT diagram generator for Ruby on Rail applications"
+    gem.description = gem.summary
+    gem.files = FileList["[A-Z]*", "{autotest,bin,lib,spec}/**/*", ".document"]
+    gem.extra_rdoc_files = FileList["*.rdoc"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 
@@ -31,16 +35,10 @@ end
 task :default => :spec
 
 require 'rake/rdoctask'
+require 'lib/version'
 Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION.yml')
-    config = YAML.load(File.read('VERSION.yml'))
-    version = "#{config[:major]}.#{config[:minor]}.#{config[:patch]}"
-  else
-    version = ""
-  end
-
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "railroad #{version}"
+  rdoc.title = "railroad #{RailRoad::VERSION::STRING}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('CHANGELOG*')
   rdoc.rdoc_files.include('AUTHORS*')

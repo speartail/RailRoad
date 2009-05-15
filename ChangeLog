@@ -1,3 +1,6 @@
+Version 0.3.1 (apr 9 2007)
+- Release again for fix an error in .gem file
+
 Version 0.3.0 (apr 9 2007)
 - Major code rewrite 
   (More OO style)

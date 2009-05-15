@@ -1,4 +1,6 @@
 = Changes
+== Version 0.5.5 (may 15 2009)
+- Support showing belongs_to relationships when generating models
 
 == Version 0.5.4 (may 15 2009)
 - Transitioned to using Jeweler for gem management

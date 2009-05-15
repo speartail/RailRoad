@@ -39,6 +39,12 @@ class DiagramGraph
            @edges.map{|e| dot_edge e[0], e[1], e[2], e[3]}.join +
            dot_footer
   end
+  
+  # Generate XMI diagram (not yet implemented)
+  def to_xmi
+     STDERR.print "Sorry. XMI output not yet implemented.\n\n"
+     return ""
+  end
 
   private
 
@@ -58,7 +64,7 @@ class DiagramGraph
   # Build diagram label
   def dot_label
     return "\t_diagram_info [shape=\"plaintext\", " +
-           "label=\"Diagram: #{@diagram_type}\\l" +
+           "label=\"#{@diagram_type} diagram\\l" +
            "Date: #{Time.now.strftime "%b %d %Y - %H:%M"}\\l" + 
            "Migration version: " +
            "#{ActiveRecord::Migrator.current_version}\\l" +
@@ -106,8 +112,6 @@ class DiagramGraph
       when 'many-many'
            options += 'taillabel="n", headlabel="n", arrowtail="normal"'
       when 'is-a'
-# REVERSE INHERITANCE (CHECK)
-#           options += 'arrowhead="onormal"'
            options += 'arrowhead="none", arrowtail="onormal"'
     end
     return "\t#{quote(from)} -> #{quote(to)} [#{options}]\n"
@@ -115,7 +119,7 @@ class DiagramGraph
 
   # Quotes a class name
   def quote(name)
-    '"' + name + '"'
+    '"' + name.to_s + '"'
   end
   
 end # class DiagramGraph

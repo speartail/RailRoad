@@ -10,7 +10,7 @@ require 'railroad/app_diagram'
 class ModelsDiagram < AppDiagram
 
   def initialize(options)
-    options.exclude.map! {|e| e = "app/models/" + e}
+    options.exclude.map! {|e| "app/models/" + e}
     super options 
     @graph.diagram_type = 'Models'
     # Processed habtm associations
@@ -90,7 +90,6 @@ class ModelsDiagram < AppDiagram
     if @options.inheritance && generated && 
        (current_class.superclass != ActiveRecord::Base) &&
        (current_class.superclass != Object)
-       # REVERSE INHERITANCE (CHECK)
       @graph.add_edge ['is-a', current_class.superclass.name, current_class.name]
     end      
 

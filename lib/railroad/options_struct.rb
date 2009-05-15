@@ -25,7 +25,7 @@ class OptionsStruct < OpenStruct
                      :hide_private => false,
                      :transitive => false,
                      :verbose => false,
-                     # :xmi => false,
+                     :xmi => false,
                      :command => '' }
     super(init_options)
   end # initialize
@@ -57,11 +57,10 @@ class OptionsStruct < OpenStruct
               "  (produce messages to STDOUT)") do |v|
         self.verbose = v
       end
-      # TODO: Add XMI output.
-      # opts.on("-x", "--xmi", "Produce XMI instead of DOT", 
-      #         "  (for UML tools)") do |x|
-      #   self.xmi = x
-      # end
+      opts.on("-x", "--xmi", "Produce XMI instead of DOT", 
+              "  (for UML tools)") do |x|
+        self.xmi = x
+      end
       opts.separator ""
       opts.separator "Models diagram options:"
       opts.on("-a", "--all", "Include all models", 

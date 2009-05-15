@@ -10,7 +10,7 @@ require 'railroad/app_diagram'
 class ControllersDiagram < AppDiagram
  
   def initialize(options)
-    options.exclude.map! {|e| e = "app/controllers/" + e}
+    options.exclude.map! {|e| "app/controllers/" + e}
     super options
     @graph.diagram_type = 'Controllers'
   end
@@ -76,7 +76,6 @@ class ControllersDiagram < AppDiagram
     # Generate the inheritance edge (only for ApplicationControllers)
     if @options.inheritance && 
        (ApplicationController.subclasses.include? current_class.name)
-       # REVERSE INHERITANCE (CHECK)
       @graph.add_edge ['is-a', current_class.superclass.name, current_class.name]
     end
   end # process_class

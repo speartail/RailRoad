@@ -32,10 +32,14 @@ class AppDiagram
         exit 2
       end
     end
- 
-    STDERR.print "Generating DOT graph\n" if @options.verbose
-
-    STDOUT.print @graph.to_dot 
+    
+    if @options.xmi 
+        STDERR.print "Generating XMI diagram\n" if @options.verbose
+    	STDOUT.print @graph.to_xmi
+    else
+        STDERR.print "Generating DOT graph\n" if @options.verbose
+        STDOUT.print @graph.to_dot 
+    end
 
     if @options.output
       STDOUT.reopen(old_stdout)

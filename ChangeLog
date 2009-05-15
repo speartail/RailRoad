@@ -1,3 +1,6 @@
+Version 0.4.1 (may 9 2008)
+- Fix a bug (class name treated as String).
+
 Version 0.4.0 (apr 25 2007)
 - Draw inheritance edges in reverse way
   (from superclass to subclass, with an arrow in the tail)

@@ -1,0 +1,11 @@
+Version 0.1.1 (apr 5 2007)
+- Changed default graph label fontsize to 14.
+- Better error handling.
+- Minor cosmetic changes.
+- New way to load classes, supporting subdirectories traversal.
+  (Inspired in RAV, http://rav.rubyforge.org/)
+- RailRoad version included in diagrams' label.
+
+
+Version 0.1.0 (apr 2 2007)
+- Initial release.

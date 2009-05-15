@@ -1,5 +1,16 @@
+Version 0.3.4 (apr 12 2007)
+- Add support for model abstract classes.
+  (don't try to get content columns, bug #10033)
+- Add verbose mode
+- More code cleanup.
+- Using an internal representation and then 
+  generating the DOT output. This will allow to
+  add more output formats in the future.
+
+
 Version 0.3.3 (apr 10 2007)
 - Code cleanup 
+
 
 Version 0.3.2 (apr 9 2007)
 - Disable STDOUT when loading applications classes, avoiding 

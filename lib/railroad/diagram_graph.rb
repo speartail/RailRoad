@@ -106,7 +106,9 @@ class DiagramGraph
       when 'many-many'
            options += 'taillabel="n", headlabel="n", arrowtail="normal"'
       when 'is-a'
-           options += 'arrowhead="onormal"'
+# REVERSE INHERITANCE (CHECK)
+#           options += 'arrowhead="onormal"'
+           options += 'arrowhead="none", arrowtail="onormal"'
     end
     return "\t#{quote(from)} -> #{quote(to)} [#{options}]\n"
   end # dot_edge

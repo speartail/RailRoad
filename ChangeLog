@@ -1,3 +1,13 @@
+Version 0.4.0 (apr 25 2007)
+- Draw inheritance edges in reverse way
+  (from superclass to subclass, with an arrow in the tail)
+  This improves how 'dot' renders the graph
+- By default, don't draw transitive inherited associations
+- Added --transitive flag to draw transitive inherited associations
+- Added --exclude flag for ommiting classes (this may help to produce
+  diagrams for applications with broken classes)
+
+
 Version 0.3.4 (apr 12 2007)
 - Add support for model abstract classes.
   (don't try to get content columns, bug #10033)

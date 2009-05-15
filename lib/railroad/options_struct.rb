@@ -14,6 +14,7 @@ class OptionsStruct < OpenStruct
   def initialize
     init_options = { :all => false,
                      :brief => false,
+                     :exclude => [],
                      :inheritance => false,
                      :join => false,
                      :label => false,
@@ -22,7 +23,9 @@ class OptionsStruct < OpenStruct
                      :hide_public => false,
                      :hide_protected => false,
                      :hide_private => false,
+                     :transitive => false,
                      :verbose => false,
+                     # :xmi => false,
                      :command => '' }
     super(init_options)
   end # initialize
@@ -35,6 +38,10 @@ class OptionsStruct < OpenStruct
       opts.on("-b", "--brief", "Generate compact diagram", 
               "  (no attributes nor methods)") do |b|
         self.brief = b
+      end
+      opts.on("-e", "--exclude file1[,fileN]", Array, "Exclude files", 
+              "  (relative path to 'app/models/' or", "   'app/controllers/')") do |list|
+        self.exclude = list
       end
       opts.on("-i", "--inheritance", "Include inheritance relations") do |i|
         self.inheritance = i
@@ -50,6 +57,11 @@ class OptionsStruct < OpenStruct
               "  (produce messages to STDOUT)") do |v|
         self.verbose = v
       end
+      # TODO: Add XMI output.
+      # opts.on("-x", "--xmi", "Produce XMI instead of DOT", 
+      #         "  (for UML tools)") do |x|
+      #   self.xmi = x
+      # end
       opts.separator ""
       opts.separator "Models diagram options:"
       opts.on("-a", "--all", "Include all models", 
@@ -64,6 +76,10 @@ class OptionsStruct < OpenStruct
       end
       opts.on("-m", "--modules", "Include modules") do |m|
         self.modules = m
+      end
+      opts.on("-t", "--transitive", "Include transitive associations",
+              "(through inheritance)") do |t|
+        self.transitive = t
       end
       opts.separator ""
       opts.separator "Controllers diagram options:"
@@ -123,8 +139,6 @@ class OptionsStruct < OpenStruct
       option_error "Invalid argument"
     rescue OptionParser::MissingArgument
       option_error "Missing argument"
-    rescue
-      option_error "Unknown error"
     end
   end  # parse
 

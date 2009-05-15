@@ -10,6 +10,7 @@ require 'railroad/app_diagram'
 class ControllersDiagram < AppDiagram
  
   def initialize(options)
+    options.exclude.map! {|e| e = "app/controllers/" + e}
     super options
     @graph.diagram_type = 'Controllers'
   end
@@ -18,7 +19,7 @@ class ControllersDiagram < AppDiagram
   def generate
     STDERR.print "Generating controllers diagram\n" if @options.verbose
 
-    files = Dir.glob("app/controllers/**/*_controller.rb")
+    files = Dir.glob("app/controllers/**/*_controller.rb") - @options.exclude
     files << 'app/controllers/application.rb'
     files.each do |f|
       class_name = extract_class_name(f)
@@ -36,7 +37,8 @@ class ControllersDiagram < AppDiagram
       disable_stdout
       # ApplicationController must be loaded first
       require "app/controllers/application.rb" 
-      Dir.glob("app/controllers/**/*_controller.rb") {|c| require c }
+      files = Dir.glob("app/controllers/**/*_controller.rb") - @options.exclude
+      files.each {|c| require c }
       enable_stdout
     rescue LoadError
       enable_stdout
@@ -74,7 +76,8 @@ class ControllersDiagram < AppDiagram
     # Generate the inheritance edge (only for ApplicationControllers)
     if @options.inheritance && 
        (ApplicationController.subclasses.include? current_class.name)
-      @graph.add_edge ['is-a', current_class.name, current_class.superclass.name]
+       # REVERSE INHERITANCE (CHECK)
+      @graph.add_edge ['is-a', current_class.superclass.name, current_class.name]
     end
   end # process_class
 

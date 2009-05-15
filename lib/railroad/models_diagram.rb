@@ -10,6 +10,7 @@ require 'railroad/app_diagram'
 class ModelsDiagram < AppDiagram
 
   def initialize(options)
+    options.exclude.map! {|e| e = "app/models/" + e}
     super options 
     @graph.diagram_type = 'Models'
     # Processed habtm associations
@@ -19,7 +20,7 @@ class ModelsDiagram < AppDiagram
   # Process model files
   def generate
     STDERR.print "Generating models diagram\n" if @options.verbose
-    files = Dir.glob("app/models/**/*.rb")
+    files = Dir.glob("app/models/**/*.rb") - @options.exclude
     files.each do |f| 
       process_class extract_class_name(f).constantize
     end
@@ -31,7 +32,8 @@ class ModelsDiagram < AppDiagram
   def load_classes
     begin
       disable_stdout
-      Dir.glob("app/models/**/*.rb") {|m| require m }
+      files = Dir.glob("app/models/**/*.rb") - @options.exclude
+      files.each {|m| require m }
       enable_stdout
     rescue LoadError
       enable_stdout
@@ -64,7 +66,15 @@ class ModelsDiagram < AppDiagram
       @graph.add_node [node_type, current_class.name, node_attribs]
       generated = true
       # Process class associations
-      current_class.reflect_on_all_associations.each do |a|
+      associations = current_class.reflect_on_all_associations
+      if @options.inheritance && ! @options.transitive
+        superclass_associations = current_class.superclass.reflect_on_all_associations
+        
+        associations = associations.select{|a| ! superclass_associations.include? a} 
+        # This doesn't works!
+        # associations -= current_class.superclass.reflect_on_all_associations
+      end
+      associations.each do |a|
         process_association current_class.name, a
       end
     elsif @options.all && (current_class.is_a? Class)
@@ -80,7 +90,8 @@ class ModelsDiagram < AppDiagram
     if @options.inheritance && generated && 
        (current_class.superclass != ActiveRecord::Base) &&
        (current_class.superclass != Object)
-      @graph.add_edge ['is-a', current_class.name, current_class.superclass.name]
+       # REVERSE INHERITANCE (CHECK)
+      @graph.add_edge ['is-a', current_class.superclass.name, current_class.name]
     end      
 
   end # process_class

@@ -18,6 +18,9 @@ controller diagrams are best processed using neato.
 Common options:
     -b, --brief                      Generate compact diagram
                                        (no attributes nor methods)
+    -e, --exclude file1[,fileN]      Exclude files
+                                       (relative path to 'app/models/' or
+                                        'app/controllers/')
     -i, --inheritance                Include inheritance relations
     -l, --label                      Add a label with diagram information
                                        (type, date, migration, version)
@@ -31,6 +34,8 @@ Models diagram options:
         --hide-types                 Hide attributes type
     -j, --join                       Concentrate edges
     -m, --modules                    Include modules
+    -t, --transitive                 Include transitive associations
+                                     (through inheritance)
 
 Controllers diagram options:
         --hide-public                Hide public methods
@@ -82,12 +87,36 @@ the following:
 Important: There is a bug in Graphviz tools when generating SVG files that
 cause a text overflow. You can solve this problem editing (with a text
 editor, not a graphical SVG editor) the file and replacing around line 12
-"font-size:14.00;" by "font-size:11.00;".
+"font-size:14.00;" by "font-size:11.00;", or by issuing the following command 
+(see "man sed"):
+
+    sed -i 's/font-size:14.00/font-size:11.00/g' file.svg
 
 Note: For viewing and editing SVG there is an excellent opensource tool
 called Inkscape (similar to Adobe Illustrator. For DOT processing you can
 also use Omnigraffle (on Mac OS X).
 
+= RailRoad as a rake task
+
+(Thanks to Thomas Ritz, http://www.galaxy-ritz.de ,for the code.)
+
+In your Rails application, put the following rake tasks into 'lib/task/diagrams.rake':
+
+  namespace :doc do
+    namespace :diagram do
+      task :models do
+        sh "railroad -i -l -a -m -M | dot -Tsvg | sed 's/font-size:14.00/font-size:11.00/g' > doc/models.svg"
+      end
+  
+      task :controllers do
+        sh "railroad -i -l -C | neato -Tsvg | sed 's/font-size:14.00/font-size:11.00/g' > doc/controllers.svg"
+      end
+    end
+  
+    task :diagrams => %w(diagram:models diagram:controllers)
+  end
+  
+Then, 'rake doc:diagrams' produces 'doc/models.svg' and 'doc/controllers.svg'.
 
 = Requirements
 

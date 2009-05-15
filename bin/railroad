@@ -16,7 +16,7 @@
 
 APP_NAME       = "railroad"
 APP_HUMAN_NAME = "RailRoad"
-APP_VERSION    = [0,3,4]
+APP_VERSION    = [0,4,0]
 COPYRIGHT      = "Copyright (C) 2007 Javier Smaldone"
 
 require 'railroad/options_struct'

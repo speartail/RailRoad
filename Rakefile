@@ -5,8 +5,7 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "railroad"
-    gem.summary = %Q{TODO}
-    gem.email = "peter@hoeg.com"
+    gem.email = ['peter@hoeg.com', 'p.hoeg@northwind.sg', 'javier@smaldone.com.ar']
     gem.homepage = "http://github.com/peterhoeg/RailRoad"
     gem.authors = ["Peter Hoeg", "Javier Smaldone"]
     gem.summary = "A DOT diagram generator for Ruby on Rail applications"
@@ -29,7 +28,6 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-
 task :default => :spec
 
 require 'rake/rdoctask'
@@ -44,6 +42,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "railroad #{version}"
   rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('CHANGELOG*')
+  rdoc.rdoc_files.include('AUTHORS*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
-

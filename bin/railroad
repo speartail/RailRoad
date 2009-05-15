@@ -19,10 +19,10 @@ APP_HUMAN_NAME = "RailRoad"
 APP_VERSION    = [0,5,3]
 COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone, 2009 Peter Hoeg"
 
-require 'railroad/options_struct'
-require 'railroad/models_diagram'
-require 'railroad/controllers_diagram'
-require 'railroad/aasm_diagram'
+require 'options_struct'
+require 'models_diagram'
+require 'controllers_diagram'
+require 'aasm_diagram'
 
 options = OptionsStruct.new
 

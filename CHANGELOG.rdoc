@@ -1,5 +1,10 @@
 = Changes
 
+== Version 0.5.4 (may 15 2009)
+- Transitioned to using Jeweler for gem management
+- Shuffled some file locations around
+- NOTE: there are NO tests passing yet, but this gem was developed without 'em
+
 == Version 0.5.3 (may 15 2009)
 - Fixed broken gemspec
 

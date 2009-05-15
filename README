@@ -3,6 +3,11 @@
 RailRoad generates models and controllers diagrams in DOT language for a 
 Rails application.
 
+This is a patched version based on the original v0.5.0.
+
+I (Peter Hoeg) am not trying to hijack Javier's project, but since he hasn't released any
+new versions since May '08, I figured I'd better put one out in order to make
+railroad work with rails v2.3.
 
 = Usage
 
@@ -138,8 +143,10 @@ RailRoad is distributed  under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2 of the 
 License, or (at your option) any later version.
 
-= Author
+= Authors
 
 Javier Smaldone 
 (javier -at- smaldone -dot- com -dot- ar, http://blog.smaldone.com.ar )
 
+Peter Hoeg
+(peter hoeg com)

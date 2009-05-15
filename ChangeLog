@@ -1,3 +1,12 @@
+Version 0.5.2 (may 15 2009)
+- Added ChangeLog entries
+- Added AUTHORS entry
+- Updated railroad version entry
+
+Version 0.5.1 (may 15 2009)
+- Support rails v2.3
+- Support namespaced models/controllers
+
 Version 0.5.0 (may 10 2008)
 - Changed model relationships representation (feature request #10898)
 - Added support for plugins models (-p) (feature request #12742 by 

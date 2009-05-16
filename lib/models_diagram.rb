@@ -125,7 +125,7 @@ class ModelsDiagram < AppDiagram
     STDERR.print "\t\tProcessing model association #{assoc.name.to_s}\n" if @options.verbose
 
     # Skip "belongs_to" associations
-    return if assoc.macro.to_s == 'belongs_to' || !@options.show_belongs_to
+    return if assoc.macro.to_s == 'belongs_to' && !@options.show_belongs_to
 
     # Only non standard association names needs a label
     

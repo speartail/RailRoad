@@ -104,24 +104,35 @@ also use Omnigraffle (on Mac OS X).
 
 = RailRoad as a rake task
 
-(Thanks to Thomas Ritz, http://www.galaxy-ritz.de ,for the code.)
+The following task is based on Thomas Ritz code, http://www.galaxy-ritz.de, and then slightly modified.
 
 In your Rails application, put the following rake tasks into 'lib/task/diagrams.rake':
 
   namespace :doc do
+
     namespace :diagram do
+
+      format = 'svg'
+      common_options = '-i -l'
+      old_font = 'font-size:14.00'
+      new_font = 'font-size:11.00'
+
+      desc "Generate model diagrams"
       task :models do
-        sh "railroad -i -l -a -m -M | dot -Tsvg | sed 's/font-size:14.00/font-size:11.00/g' > doc/models.svg"
+        sh "railroad #{common_options} -a -m -M | dot -T#{format} | sed 's/#{old_font}/#{new_font}/g' > doc/models.#{format}"
       end
-  
+
+      desc "Generate controller diagrams"
       task :controllers do
-        sh "railroad -i -l -C | neato -Tsvg | sed 's/font-size:14.00/font-size:11.00/g' > doc/controllers.svg"
+        sh "railroad #{common_options} -C | neato -T#{format} | sed 's/#{old_font}/#{new_font}/g' > doc/controllers.#{format}"
       end
     end
-  
+
+    desc "Create diagrams of models and controllers"
     task :diagrams => %w(diagram:models diagram:controllers)
+
   end
-  
+
 Then, 'rake doc:diagrams' produces 'doc/models.svg' and 'doc/controllers.svg'.
 
 = Requirements

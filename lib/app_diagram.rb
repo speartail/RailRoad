@@ -79,12 +79,12 @@ class AppDiagram
     end
   end
 
-  # Extract class name from filename
+  # Extract class name from filename, respecting modules
   def extract_class_name(filename)
-    #filename.split('/')[2..-1].join('/').split('.').first.camelize
-    # Fixed by patch from ticket #12742
-    # File.basename(filename).chomp(".rb").camelize
-    filename.split('/')[2..-1].collect { |i| i.camelize }.join('::').chomp(".rb")
+    class_name = File.basename(filename).chomp(".rb").camelize
+    rooted_filename = filename.sub(Rails.root, '').sub(/^app\/\w+?\//, '').sub(/^lib/, '')
+    module_names = rooted_filename.split('/')[0..-2].map(&:camelize).join('::')
+    module_names.present? ? module_names << '::' << class_name : class_name
   end
 
 end # class AppDiagram

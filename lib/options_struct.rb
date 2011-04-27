@@ -36,7 +36,7 @@ class OptionsStruct < OpenStruct
 
   def parse(args)
     @opt_parser = OptionParser.new do |opts|
-      opts.banner = "Usage: #{APP_NAME} [options] command"
+      opts.banner = "Usage: #{RailRoad::APP_NAME} [options] command"
       opts.separator ""
       opts.separator "Common options:"
       opts.on("-b", "--brief", "Generate compact diagram", 
@@ -113,8 +113,8 @@ class OptionsStruct < OpenStruct
         exit
       end
       opts.on("--version", "Show version and copyright") do
-        STDOUT.print "#{APP_HUMAN_NAME} version #{APP_VERSION.join('.')}\n\n" +
-                     "#{COPYRIGHT}\nThis is free software; see the source " +
+        STDOUT.print "#{RailRoad::APP_HUMAN_NAME} version #{RailRoad::APP_VERSION.join('.')}\n\n" +
+                     "#{RailRoad::COPYRIGHT}\nThis is free software; see the source " +
                      "for copying conditions.\n\n"
         exit
       end

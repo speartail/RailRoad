@@ -63,7 +63,7 @@ class AppDiagram
   # Print error when loading Rails application
   def print_error(type)
     STDERR.print "Error loading #{type}.\n  (Are you running " +
-                 "#{APP_NAME} on the aplication's root directory?)\n\n"
+                 "#{RailRoad::APP_NAME} on the aplication's root directory?)\n\n"
   end
 
   # Load Rails application's environment

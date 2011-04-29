@@ -16,13 +16,15 @@
 
 require File.dirname(__FILE__) + '/../lib/version'
 
-APP_NAME       = "railroad"
-APP_HUMAN_NAME = "RailRoad"
-APP_VERSION    = [RailRoad::VERSION::MAJOR, RailRoad::VERSION::MINOR, RailRoad::VERSION::PATCH]
-COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone, 2009 Peter Hoeg"
+module RailRoad
+  APP_NAME       = "railroad"
+  APP_HUMAN_NAME = "RailRoad"
+  APP_VERSION    = [RailRoad::VERSION::MAJOR, RailRoad::VERSION::MINOR, RailRoad::VERSION::PATCH]
+  COPYRIGHT      = "Copyright (C) 2007-2008 Javier Smaldone, 2009 Peter Hoeg"
+end
 
 if ARGV.first == '--version'
-  puts "#{APP_HUMAN_NAME} v#{RailRoad::VERSION::STRING}"
+  puts "#{RailRoad::APP_HUMAN_NAME} v#{RailRoad::VERSION::STRING}"
   exit(0)
 end
 
@@ -46,9 +48,9 @@ elsif options.command == 'controllers'
 elsif options.command == 'aasm'
   diagram = AasmDiagram.new options
 else
-  STDERR.print "#{APP_HUMAN_NAME} v#{RailRoad::VERSION::STRING}\n" +
+  STDERR.print "#{RailRoad::APP_HUMAN_NAME} v#{RailRoad::VERSION::STRING}\n" +
     "Error: You must supply a command\n" +
-    "  (try #{APP_NAME} -h)\n\n"
+    "  (try #{RailRoad::APP_NAME} -h)\n\n"
   exit 1
 end
 

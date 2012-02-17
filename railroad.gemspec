@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{railroad}
-  s.version = "0.5.8"
+  s.version = "0.6.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Peter Hoeg", "Javier Smaldone"]
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
      "lib/models_diagram.rb",
      "lib/options_struct.rb",
      "lib/version.rb",
+     "lib/tasks/diagrams.rake",
      "spec/app_diagram_spec.rb",
      "spec/railroad_spec.rb",
      "spec/spec_helper.rb"

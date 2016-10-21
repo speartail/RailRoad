@@ -10,4 +10,5 @@ http://railroad.rubyforge.org
 * Hajime Baba
 * Ana Nelson
 * Peter Hoeg
+* DoppioJP
 * and many testers...

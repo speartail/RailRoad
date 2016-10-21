@@ -18,6 +18,19 @@ controller diagrams are best processed using neato.
 
     railroad [options] command
  
+= To use for your Rails app
+
+This will give you access to rake tasks creating diagrams.
+
+- Add to Gemfile or to environment.rb
+- put into [RAILS_ROOT]/lib/tasks railroad.rb file:
+
+    $VERBOSE = nil
+    Dir["#{Gem.searcher.init_gemspecs.find { |gs| gs.name == 'railroad' }.full_gem_path}/lib/tasks/*.rake"].each { |ext| load ext }
+
+- in Rakefile add:
+    require 'tasks/railroad'
+
 == Options
 
 Common options:
